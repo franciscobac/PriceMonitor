@@ -1,0 +1,16 @@
+# Ignorar todos os arquivos .json
+*.json
+PriceMonitorAPI/appsettings.json
+
+# Ignorar a pasta de logs
+results/
+
+# Ignorar diretório Migrations do banco
+PriceMonitorAPI/Migrations
+
+# Ignorar arquivos do Visual Studio Code
+.vscode/
+
+# Ignorar arquivos de build do C#
+*.dll
+*.exe
