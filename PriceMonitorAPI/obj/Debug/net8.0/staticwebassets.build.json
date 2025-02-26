@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Z6PXJ+7nKF6fh+RDt4yALwhUdPfUJuU027QHqdjI0w8=",
+  "Source": "PriceMonitorAPI",
+  "BasePath": "_content/PriceMonitorAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
