@@ -12,5 +12,6 @@ PriceMonitorAPI/Migrations
 .vscode/
 
 # Ignorar arquivos de build do C#
+PriceMonitorAPI/obj
 *.dll
 *.exe
