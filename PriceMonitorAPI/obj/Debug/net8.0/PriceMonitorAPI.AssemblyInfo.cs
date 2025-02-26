@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PriceMonitorAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a4a4c1177d8620220e9c010c8f5bc6a75be71af")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f7acf2b00c0b47f2f26ac2a71bfcfec2e2791cb6")]
 [assembly: System.Reflection.AssemblyProductAttribute("PriceMonitorAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PriceMonitorAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
