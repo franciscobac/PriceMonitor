@@ -5,13 +5,16 @@ PriceMonitorAPI/appsettings.json
 # Ignorar a pasta de logs
 results/
 
-# Ignorar diretório Migrations do banco
+# Ignorar diretórios
 PriceMonitorAPI/Migrations
+PriceMonitorAPI/Helper/*
+PriceMonitorAPI/Migrations
+PriceMonitorAPI/bin
+PriceMonitorAPI/obj
 
 # Ignorar arquivos do Visual Studio Code
 .vscode/
 
 # Ignorar arquivos de build do C#
-PriceMonitorAPI/obj
 *.dll
 *.exe
