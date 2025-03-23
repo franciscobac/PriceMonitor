@@ -7,45 +7,69 @@ Library           Collections
 Library           DateTime
 
 *** Variables ***
-${URL}           https://shopping.google.com.br
+${URL}           http://buscape.com.br
 ${BROWSER}       headlesschrome
 ${API_URL}       http://localhost:5231/api/produtos
 ${COUNT}         1
 
 *** Keywords ***
-Abrir o browser e navegar até a página do shopping Google
-    Open Browser    ${URL}    ${BROWSER}
+Abrir o browser e navegar até a página do Buscape
+    ${chrome_options}=    Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
+    Call Method    ${chrome_options}    add_argument    --headless
+    Call Method    ${chrome_options}    add_argument    --disable-gpu
+    Call Method    ${chrome_options}    add_argument    --no-sandbox
+    Call Method    ${chrome_options}    add_argument    --disable-dev-shm-usage
+    Call Method    ${chrome_options}    add_argument    --user-agent\=Your Own user agent data
+    Open Browser    ${URL}    ${BROWSER}    options=${chrome_options}
     Sleep    5s
 
+# Check pop-ups or modals
+    ${modal_exists}=    Run Keyword And Return Status    Element Should Be Visible    xpath://*[contains(text(), 'Concordar')]
+    IF    ${modal_exists} == $True
+        Click Element    xpath://*[contains(text(), 'Concordar')]
+    END
+    Sleep    2s
+
 Digitar e buscar o produto "${Produto}"
-    Wait Until Element Is Visible    locator=//*[@placeholder='O que você está procurando?']    timeout=20s
-    Input Text    locator=//*[@placeholder='O que você está procurando?']    text=${Produto}
-    Wait Until Element Is Visible    locator=css:*[action='https://www.google.com.br/search?tbm=shop'] ul li:nth-child(1)    timeout=10s
-    Click Element    locator=css:*[action='https://www.google.com.br/search?tbm=shop'] ul li:nth-child(1)
+    Wait Until Element Is Visible    locator=${inputSearch}    timeout=20s
+    Input Text    locator=${inputSearch}    text=${Produto}
+    Wait Until Element Is Visible    locator=${buttonSearch}    timeout=10s
+    Click Element    locator=${buttonSearch}
     Sleep    10s
 
-Selecionar a opção de Itens novos
-    Scroll Element Into View    locator=xpath://*[contains(text(), 'Itens novos')]
-    Wait Until Element Is Visible    locator=xpath://*[contains(text(), 'Itens novos')]    timeout=10s
-    Click Element    locator=xpath://*[contains(text(), 'Itens novos')]
-    Sleep    10s
+    # Check pop-ups or modals (if exist)
+    ${popup_exists}=    Run Keyword And Return Status    Element Should Be Visible    xpath://*[@class='ModalCampaign_CloseButton__LDTLX']//button
+    IF    ${popup_exists} == $True
+        Click Element    xpath://*[@class='ModalCampaign_CloseButton__LDTLX']//button
+    END
+    Sleep    2s
 
 Armazenar em uma lista os items encontrados do produto "${Produto}" e enviar por Json para a API
     ${products}    Create List
     Sleep    5s
     
-    ${items}    Get WebElements    locator=css:*[class='sh-dgr__content']
+    ${items}    Get WebElements    locator=${cardProductLowestPrice}
     Sleep    5s
 
         FOR    ${item}    IN    @{items}
             Sleep    500ms
-            Scroll Element Into View    locator=xpath:(//*[@class='sh-dgr__content'])[${COUNT}]//*[@class='tAxDx']
-            ${validarCondicao}    Run Keyword And Return Status    Element Should Contain    locator=(//*[@class='sh-dgr__content'])[${COUNT}]//*[@class='tAxDx']    expected=${Produto}    ignore_case=true
+            #Scroll Element Into View    locator=${cardProductLowestPrice}[${COUNT}]
+
+	    # Build XPath dynamically for the currently item
+            ${current_card}=    Set Variable    (${cardProductLowestPrice})[${COUNT}]
+            Scroll Element Into View    locator=${current_card}
+            Capture Page Screenshot    screenshot_${COUNT}.png  # cat the screenshot            
+	    
+	    # Build XPath dynamically for the currently item
+            ${current_card}=    Set Variable    (${cardProductName})[${COUNT}]
+            
+	    ${validarCondicao}    Run Keyword And Return Status    Element Should Contain    locator=${current_card}    expected=${Produto}    ignore_case=true
             IF    ${validarCondicao} == $True
-                ${name}    Get Text    locator=xpath:(//*[@class='sh-dgr__content'])[${COUNT}]//*[@class='tAxDx']
-                ${price}    Get Text    locator=xpath:(//*[@class='sh-dgr__content'])[${COUNT}]//*[@class='a8Pemb OFFNJ']
-                ${store}    Get Text    locator=xpath:(//*[@class='sh-dgr__content'])[${COUNT}]//*[@class='aULzUe IuHnof']
-                ${url}      Get Element Attribute    locator=xpath:(//*[@class='sh-dgr__content'])[${COUNT}]//*[@class='mnIHsc']/a[1]    attribute=href
+                ${name}    Get Text    locator=(//*[@class='Hits_ProductCard__Bonl_']//*[contains(text(),'Menor preço')]/ancestor::*[@class='ProductCard_ProductCard_Inner__gapsh']//*[@data-testid='product-card::name'])[${COUNT}]
+                ${price}    Get Text    locator=(//*[@class='Hits_ProductCard__Bonl_']//*[contains(text(),'Menor preço')]/../..//*[@data-testid='product-card::price'])[${COUNT}]
+                ${storeSubstring}    Get Text    locator=(//*[@class='Hits_ProductCard__Bonl_']//*[contains(text(),'Menor preço')])[${COUNT}]
+                ${store}    Get Substring    ${storeSubstring}    15
+                ${url}      Get Element Attribute    locator=(//*[@class='Hits_ProductCard__Bonl_']//*[contains(text(),'Menor preço')]/ancestor::*[@class='ProductCard_ProductCard_Inner__gapsh'])[${COUNT}]    attribute=href
                 ${data_coleta}    Get Current Date
                 ${data_formatada}    Convert Date    ${data_coleta}    result_format=%Y-%m-%dT%H:%M:%S
 
